@@ -57,10 +57,10 @@ One major thing to point out is that this uses path keys to traverse the data ob
 
 #### Events
 
-* `ready` : Emitted when the object is ready for use. Not necesary unless using a file for data instead of a string or object. Actually, any event capture with "ready" while using synchronous operations won't be fast enough and likely won't be ever called.
-* `error` : Emitted when object encouters an error. They could also be thrown (not by hand!), so watch out.
-* `set` : Emitted when a key is set. Gives to arguments, `keys` which is an array of keys representing the path and `value`.
-* `save` : Emitted when a file is successfully saved.
+* `ready` : Emitted when the object is ready for use. Not necesary unless using a file for data instead of a string or an object. Actually, any "ready" event you declare while using synchronous operations (ie, no FS calls) won't be fast enough and likely won't ever be called.
+* `error` : Emitted when object encouters an error. It should be noted that errors have the possibility of being thrown and not captured by this event. If you come across one, please let me know.
+* `set` : Emitted when a key is set. Gives two arguments, `keys`, which is an array of keys representing the path and `value`.
+* `save` : Emitted when a file is successfully saved. Gives a single argument, `file`.
 
 #### Methods
 
@@ -86,7 +86,7 @@ Deeply loops through data at key `start` and calls `iterative` for each pair. `i
 
 ##### `test( key, t )`
 
-Test the value at `key` against `t`. If `t` is a string, then it is used in a `typeof` to test the value as a specifc type. If `t` is a function, then it is called with value as the only argument. If `t` is a regular expression, the value is tested against is. Anything else is matched for equality.
+Test the value at `key` against `t`. If `t` is a string, then it is used in a `typeof` to test the value as a specifc type. If `t` is a function, then it is called with value as the only argument. If `t` is a regular expression, the value is tested for matches. Anything else is matched for equality.
 
 For example, `test("dependencies:underscore", "string")` would return true on this module's package.json.
 
