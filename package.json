@@ -2,8 +2,8 @@
 	"name": "json-toolkit",
 	"version": "1.0.0",
 	"author": "Tyler Johnson <tyler@vintyge.com>",
-	"description": "Library for handling JSON/Javascript Objects.",
-	"homepage": "",
+	"description": "Library for handling/traversing JSON/Javascript objects/files.",
+	"homepage": "https://github.com/appleifreak/json-toolkit",
 	"main": "main.js",
 	"dependencies": {
 		"underscore": "1.4.4"
@@ -13,13 +13,16 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": ""
+		"url": "git://github.com/appleifreak/json-toolkit.git"
 	},
 	"keywords": [
 		"json",
 		"toolkit",
 		"key",
 		"parse",
-		"match"
+		"match",
+		"handle",
+		"traverse",
+		"objects"
 	]
 }
