@@ -1,0 +1,25 @@
+{
+	"name": "json-toolkit",
+	"version": "1.0.0",
+	"author": "Tyler Johnson <tyler@vintyge.com>",
+	"description": "Library for handling JSON/Javascript Objects.",
+	"homepage": "",
+	"main": "main.js",
+	"dependencies": {
+		"underscore": "1.4.4"
+	},
+	"engines": {
+		"node": ">=0.8"
+	},
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"keywords": [
+		"json",
+		"toolkit",
+		"key",
+		"parse",
+		"match"
+	]
+}
