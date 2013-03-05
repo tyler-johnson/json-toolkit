@@ -66,11 +66,11 @@ One major thing to point out is that this uses path keys to traverse the data ob
 
 ##### `get( key )`
 
-Retrieves the value at `key` in `data`. To transcend objects, seperate each key with `key_sep`.
+Retrieves the value at `key` in data. To transcend objects, seperate each key with `key_sep`.
 
 ##### `set( key, value )`
 
-Sets `value` at `key` in `data`.
+Sets `value` at `key` in data.
 
 ##### `match( key )`
 
@@ -100,7 +100,7 @@ Deeply search data for `value` and return *all* keys that match.
 
 ##### `save( [ file ] [, callback ] )`
 
-Saves data as JSON to `file`. If `file` is not used, the internal file property is used instead. On completion, the internal file property is set to `file`. `callback` is called with one argument, `error`.
+Saves data as JSON to `file`. If `file` is not provided, the internal file property is used instead. On completion, the internal file property is set to `file`. `callback` is called with one argument, `error`.
 
 ##### `toPrettyString( [ indent ] )`
 
@@ -133,3 +133,7 @@ Returns internal data object. This is useful for embedding into objects that wil
 	job.on("error", function(err) {
 		console.error(err);
 	});
+
+## Feedback/Suggestions
+
+I really want to extend this library to include many different JSON tools. These are only the ones that I have personally needed in the past. If you have a suggested addition to this library, I'd love to hear it (and probably add it). Of course, I (Tyler Johnson) am always reachable at <tyler@vintyge.com>.
