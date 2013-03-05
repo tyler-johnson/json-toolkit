@@ -101,24 +101,31 @@ class JSONHelper extends EventEmitter
 
 		if _.isString(key) then key = new RegExp "^#{rmatch(key)}$"
 		if !_.isRegExp(key)
-			return @emit "error", new Error("Expecting string or regex.")
+			@emit "error", new Error("Expecting string or regex.")
+			return []
 
-		@each (v, k) ->
-			if key.test(k) then matches.push k
-
-		return matches
-
-	each: (start, cb) ->
-		if _.isFunction(start) then [cb, start] = [start, null]
-		
-		r = (obj, base) =>
+		reach = (obj, base) =>
 			base = if base then base + @options.key_sep else ""
 			_.each obj, (v, k) ->
 				k = base + k
-				cb v, k
-				if _.isObject(v) then r v, k
+				if key.test(k) then matches.push k
+				if _.isObject(v) then reach v, k
 
-		r @get(start)
+		reach(@get())
+		return matches
+
+	replace: (key, val) ->
+		@each key, (x, k) =>
+			if _.isFunction(val) then v = val @get(k), k
+			else v = val
+
+			@set k, v
+
+	each: (key, cb) ->
+		if _.isFunction(key) then [cb, key] = [key, null]
+		ms = @match key or "**"
+		_.each ms, (k) =>
+			cb(@get(k), k, ms)
 
 	test: (key, test) ->
 		val = @get key

@@ -80,9 +80,13 @@ For example, `deps:*` would match `deps:underscore` and `deps:foo`, but not `dep
 
 This method turns string `key` into a Regular Expression so any valid regex in `key` is compatible. This method will also accept a Regular Expression for `key` and will be significantly faster than using a string.
 
-##### `each( [ start, ] iterative )`
+##### `each( [ match, ] iterative )`
 
-Deeply loops through data at key `start` and calls `iterative` for each pair. `iterative` is a function with two arguments, `key` and `value`. If `value` is an object, `iterative` is called and then it will be called on all children values (hence the deep part).
+Loops through all keys returned from `match` (see above) and calls `iterative` for each key. `iterative` is a function with three arguments, `value`, `key`, and `list`. This is useful when trying to dynamically process keys/values, however it is very inefficient and should not be your "go-to" loop.
+
+##### `replace( [ match, ] value )`
+
+Loops through all keys returned from `match` (see above) and sets them to `value`. `value` can also an iterative function that should return a new value for the key. It is called with three arguments, `value`, `key`, and `list`.
 
 ##### `test( key, t )`
 
@@ -121,16 +125,20 @@ Returns internal data object. This is useful for embedding into objects that wil
 		pretty_output: true
 	});
 	
-	job.on("ready", function() {
-		job.set("dependencies:underscore", "1.4.4");
-		job.save();
+	job.on("ready", function() { // Wait for file to import
+		job.set("dependencies:underscore", "1.4.4"); // Set a single key
+		job.replace("dependencies:*", function(v, k) { // Set a key by match
+			console.log(k, "=>", v);
+			return '9.9.9';
+		});
+		job.save(); // Save the file
 	});
 	
-	job.on("save", function(file) {
+	job.on("save", function(file) { // When save is successfuly
 		console.log("Saved JSON to "+file+".");
 	});
 	
-	job.on("error", function(err) {
+	job.on("error", function(err) { // When an error is thrown
 		console.error(err);
 	});
 
