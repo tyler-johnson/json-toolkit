@@ -17,7 +17,11 @@ To use, simply require the package. JSON-Toolkit also has a `Helper` class (whic
 
 ### `json.parse( str )`
 
-Parses `str` into Javascript. Internally uses `JSON.parse`.
+Parses `str` into Javascript. Internally uses `jsonlint.parse`. Throws any validation errors.
+
+### `json.validate( str )`
+
+Attempts to parses `str` into Javascript and uses jsonlint to validate. If a validation error is found, it is returned. Otherwise, `null` is returned on valid JSON.
 
 ### `json.stringify( obj [, replacer [, indent ] ] )`
 
@@ -31,9 +35,11 @@ Parses a `obj` into formatted JSON. `indent` is a string to use for indents or a
 
 Gets `file` contents and parses into Javascript. `callback` gives two arguments, `error` and `data`.
 
-### `json.saveJSON( data, file [, indent ] [, callback ] )`
+### `json.saveToFile( data, file [, indent ] [, callback ] )`
 
 Parses `data` as JSON and saves to `file`. Using `indent` forces formatted printing (see above for usage). `callback` is called with one argument, `error`.
+
+This method used to be `saveJSON()`. The name was changed to better represent what it does. Both functions will do the same thing.
 
 ### `new (json.Helper)( file | JSON | data [, options ] )`
 

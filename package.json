@@ -1,4 +1,4 @@
-{
+{,
 	"name": "json-toolkit",
 	"version": "1.0.1",
 	"author": "Tyler Johnson <tyler@vintyge.com>",
@@ -6,7 +6,8 @@
 	"homepage": "https://github.com/appleifreak/json-toolkit",
 	"main": "main.js",
 	"dependencies": {
-		"underscore": "1.4.4"
+		"underscore": "1.4.4",
+		"jsonlint": "1.5.1"
 	},
 	"engines": {
 		"node": ">=0.8"

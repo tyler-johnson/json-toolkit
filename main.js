@@ -1,7 +1,8 @@
-var _ = require('underscore');
+var _ = require('underscore'),
+	jsonlint = require("jsonlint");
 
 var jsontoolkit = module.exports = {
-	parse: JSON.parse,
+	parse: jsonlint.parse,
 	stringify: JSON.stringify
 }
 
