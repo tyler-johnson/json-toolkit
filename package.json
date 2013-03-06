@@ -1,6 +1,6 @@
 {,
 	"name": "json-toolkit",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": "Tyler Johnson <tyler@vintyge.com>",
 	"description": "A simple library to do extensive things with JSON.",
 	"homepage": "https://github.com/appleifreak/json-toolkit",
