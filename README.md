@@ -4,7 +4,9 @@ This is a simple toolkit to make life with JSON easier in Node. On top of tradit
 
 ## Install
 
-	npm install json-toolkit
+	npm install json-toolkit --save
+
+The `--save` will tell npm is add it to your `package.json`.
 
 ## Usage
 
