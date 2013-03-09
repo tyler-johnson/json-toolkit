@@ -12,4 +12,5 @@ _.each(utils, function(u, m) {
 	jsontoolkit[m] = u;
 });
 
-jsontoolkit.Helper = require('./lib/helper');
+jsontoolkit.Resource = require('./lib/resource');
+jsontoolkit.Helper = jsontoolkit.Resource;

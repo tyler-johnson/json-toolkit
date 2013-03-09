@@ -5,9 +5,9 @@
 json = require '../main'
 _ = require 'underscore'
 fs = require 'fs'
-EventEmitter = require('events').EventEmitter
+SRPClass = require('./SRPClass')
 
-class JSONHelper extends EventEmitter
+class JSONResource extends SRPClass
 	constructor: (v, options) ->
 		@options = _.defaults options,
 			from_file: false,
@@ -16,25 +16,36 @@ class JSONHelper extends EventEmitter
 			indent: "\t"
 
 		# Default vars
-		@data = null
+		@data = {}
 
-		unless v
-			@data = {}
+		do_ready = _.once () =>
+			@isReady = true
 			@emit "ready"
-		else if _.isString(v)
-			if @options.from_file
-				@file = v
-				json.parseFile v, (err, @data) =>
-					if err then @emit "error", err
-					else @emit "ready"
-			else
-				try
-					@data = json.parse v
-					@emit "ready"
-				catch e then @emit "error", e	
+
+		# Deal with "watching"
+		@watching = {}
+		@on "change", (key, val) =>
+			if _.has(@watching, key) then @watching[key].call(null, key, val)
+
+		# Handle input
+		unless v then do_ready()
+
+		# Is string and is filename
+		if _.isString(v) and @options.from_file
+			@file = v
+
+			# Check if it exists because we don't care if it doesn't
+			fs.exists v, (exists) =>
+				if exists
+					@load v, (err) =>
+						if err then @emit "error", err
+						else do_ready()
+				else do_ready()
+		
+		# Otherwise have load handle it
 		else
-			@data = v
-			@emit "ready"
+			@load v
+			do_ready()
 
 	get: (key) ->
 		unless key then return @data
@@ -76,17 +87,26 @@ class JSONHelper extends EventEmitter
 		# Finally, set some bitches
 		unless failed
 			current[_.last(keys)] = val
-			@emit "set", keys, val
+			@emit "change", keys.join(@options.key_sep), val
+
+	test: (key, value) ->
+		val = @get key
+
+		if _.isString(value) then return typeof val is value
+		else if _.isFunction(value) then return value.call null, val
+		else if _.isRegExp(value) then return val.test(value)
+		else return value is val
 
 	match: (key) ->
 		stars = /([\\])?(\*\*?)/i
 		one = "([^#{@options.key_sep}]*)"
 		two = "(.*)"
 		matches = []
+		start = null
 
 		rmatch = (str) ->
 			m = stars.exec(str)
-			unless m then return str
+			unless m then return [ str, "", "" ]
 			
 			a = str.slice 0, m.index
 
@@ -95,11 +115,17 @@ class JSONHelper extends EventEmitter
 			else if m[2] is "**" then two
 			else m[0]
 
-			c = rmatch str.slice m.index + m[0].length
+			c = rmatch(str.slice(m.index + m[0].length)).join("")
 
-			return a + b + c
+			return [ a, b, c ]
 
-		if _.isString(key) then key = new RegExp "^#{rmatch(key)}$"
+		if _.isString(key)
+			[ a, b, c ] = rmatch(key)
+			s = a.split(@options.key_sep)
+			
+			start = _.initial(s).join(@options.key_sep)
+			key = new RegExp "^#{_.last(s)+b+c}$"
+		
 		if !_.isRegExp(key)
 			@emit "error", new Error("Expecting string or regex.")
 			return []
@@ -111,7 +137,13 @@ class JSONHelper extends EventEmitter
 				if key.test(k) then matches.push k
 				if _.isObject(v) then reach v, k
 
-		reach(@get())
+		value = @get(start)
+		if _.isObject(value) then reach(value)
+		else matches = [ "" ]
+
+		matches = _.map matches, (m) =>
+			return start + @options.key_sep + m
+
 		return matches
 
 	replace: (key, val) ->
@@ -127,13 +159,12 @@ class JSONHelper extends EventEmitter
 		_.each ms, (k) =>
 			cb(@get(k), k, ms)
 
-	test: (key, test) ->
-		val = @get key
+	watch: (key, cb) ->
+		if _.isFunction(key) and !cb then [cb, key] = [key, "**"]
+		unless _.isFunction(cb) and _.isString(key) then return
 
-		if _.isString(test) then return typeof val is test
-		else if _.isFunction(test) then return test.call null, val
-		else if _.isRegExp(test) then return val.test(test)
-		else return test is key
+		keep = _.chain(@match(key)).map((k) -> return [ k, cb ]).object().value()
+		_.extend @watching, keep
 
 	# return first matched key
 	find: (val) ->
@@ -163,6 +194,25 @@ class JSONHelper extends EventEmitter
 		_find(@data)
 		return keys
 
+	load: (data, cb) ->
+		old = @toObject()
+
+		if _.isFunction cb
+			return json.parseFile data, (err, obj) =>
+				if err then cb err
+				else
+					_.extend @data, obj
+					cb null, old
+					@emit "load", old
+
+		try 
+			if _.isString data then data = json.parse data
+			_.extend @data, data
+		catch e then return @emit "error", e
+
+		@emit "load", old
+		return old
+
 	save: (file, cb) ->
 		if _.isFunction(file) then [cb, file] = [file, @file]
 		unless file then file = @file or null
@@ -185,9 +235,12 @@ class JSONHelper extends EventEmitter
 		return json.stringify @data
 
 	toJSON: () ->
-		return @data
+		return @toObject()
+
+	toObject: () ->
+		return _.clone(@data)
 
 	_sepPath: (p) ->
 		return _.compact p.split @options.key_sep
 
-module.exports = JSONHelper
+module.exports = JSONResource
