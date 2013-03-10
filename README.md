@@ -6,7 +6,7 @@ This is a simple toolkit to make life with JSON easier in Node. On top of tradit
 
 	npm install json-toolkit --save
 
-The `--save` will tell npm is add it to your `package.json`.
+The `--save` will tell npm to add it to your `package.json`.
 
 ## Usage
 
@@ -131,9 +131,13 @@ Returns a formatted JSON string. `indent` is optional and by default will use `o
 
 Returns an unformatted JSON string.
 
+##### `toObject()`
+
+Returns a clone of the internal data object.
+
 ##### `toJSON()`
 
-Returns internal data object. This is useful for embedding into objects that will be converted into JSON.
+Returns `toObject()` internally. This is useful for embedding into objects that will be converted into JSON.
 
 ## Example
 
